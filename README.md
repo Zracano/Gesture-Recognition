@@ -1,1 +1,1 @@
-# Hand-Recognition
+# Gesture Recognition
