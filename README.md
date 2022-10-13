@@ -1,6 +1,6 @@
 # Gesture Recognition
 
-Git (Step 1):
+Git:
 ```Shell Session
 # SETTING UP
 # ---- ASSUMING you have Git installed ----
@@ -27,22 +27,4 @@ git status
 # to get the most updated project files
 git pull
 
-```
-
-Recommendations for those using Windows (Step 2):<br>
-Google the respective commands for Unix
-```Shell Session
-# add a virtual enviroment for the project (make sure you are in the Gesture-Recognition directory)
-python3 python -m venv venv
-```
-```Shell Session
-# activate your virtual enviroment
-venv\Scripts\activate.bat
-```
-- download whatever packages you need using pip3
-```Shell Session
-# make sure you are up-to-date with the current requirements.txt on GitHub, if not, run these 2 commands
-# git pull 
-# pip install -r requirements.txt
-pip3 freeze > requirements.txt
 ```
