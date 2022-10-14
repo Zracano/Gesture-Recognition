@@ -55,3 +55,27 @@ The first line creates the environment from the specifications file which only n
 The second line activates the environment which may need to be done each time you restart the terminal.
 
 The third line is to test the environment installation where it will list all dependencies for that environment
+
+When you update your environment by using 
+
+```shell
+conda install
+```
+
+or 
+
+```shell
+pip install
+```
+
+we need to update our environment.yml file by doing
+```shell
+conda env export > environment.yml
+```
+
+If we pull a new environment.yml file we simply update or environment by doing
+```shell
+conda env update --prefix ./env --file environment.yml  --prune
+```
+
+
