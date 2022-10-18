@@ -160,4 +160,4 @@ cython_debug/
 #.idea/
 
 # local files to not publish
-secrets.py
+nest_secrets.py
