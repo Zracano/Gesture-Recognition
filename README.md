@@ -28,9 +28,15 @@ git status
 # to get the most updated project files
 git pull
 # Always create a new branch when working on something new
+<<<<<<< HEAD
+git checkout -b "branch-name"
+# To switch between different branches
+git checkout "branch-name"
+=======
 git checkout -b {branch-name}
 # To switch between different branches
 git checkout {branch-name}
+>>>>>>> 57e51aa99fc837658ec4902e13c2bc75f8a2ec28
 # To store local changes without committing
 git stash 
 # To restore local changes
@@ -71,7 +77,9 @@ pip install
 we need to update our environment.yml file by doing
 ```shell
 conda env export > environment.yml
+
 # after this, go to environment.yml file and delete last line (starts with "prefix")
+
 ```
 
 If we pull a new environment.yml file we simply update or environment by doing
