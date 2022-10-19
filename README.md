@@ -28,15 +28,9 @@ git status
 # to get the most updated project files
 git pull
 # Always create a new branch when working on something new
-<<<<<<< HEAD
-git checkout -b "branch-name"
-# To switch between different branches
-git checkout "branch-name"
-=======
 git checkout -b {branch-name}
 # To switch between different branches
 git checkout {branch-name}
->>>>>>> 57e51aa99fc837658ec4902e13c2bc75f8a2ec28
 # To store local changes without committing
 git stash 
 # To restore local changes
