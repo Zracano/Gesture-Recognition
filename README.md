@@ -1,6 +1,38 @@
 # Gesture Recognition
 
-### Git:
+## APIs
+
+#### Nest API
+###### Purpose: Control thermostat temperature and modes (HOT, COOL, OFF).
+
+```python
+# How to use:
+
+#########################################################################
+# All methods return "ERROR" or "CONNECTION_ERROR" if there is an error #
+#########################################################################
+
+# get current mode of Nest Thermostat
+# returns: COOL, HEAT, or OFF
+get_current_temp_mode()
+
+# get current temp
+# if current mode is HEAT or COOL, returns a temperature
+# if mode is OFF, returns a 0
+# returns: int (temperature value)
+get_current_temp()
+
+# change temperature: {value} = int and {command} = "SetCool" or "SetHeat"
+# change temperature mode: {value} = "OFF", "HOT", or "COOL" and {command} = "SetMode"
+# return nothing is successful
+update_thermostat(value, command)
+```
+
+#### Spotify API
+
+#### Kasa API
+
+## Git:
 ```shell
 # SETTING UP
 # ---- ASSUMING you have Git installed ----
@@ -36,7 +68,7 @@ git stash
 # To restore local changes
 git stash pop
 ```
-### Creating an environment:
+## Creating an environment:
 [Instructions to install conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
 
 The file **environment.yml** describes the python version and various dependencies with specific version numbers. 
