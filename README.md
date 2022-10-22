@@ -110,7 +110,7 @@ conda env export > environment.yml
 
 If we pull a new environment.yml file we simply update or environment by doing
 ```shell
-conda env update --prefix ./env --file environment.yml  --prune
+conda env update --file environment.yml  --prune
 ```
 
 
