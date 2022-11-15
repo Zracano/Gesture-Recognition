@@ -100,7 +100,7 @@ def __get_new_token():
         return _Helper.ERROR
     
     # call is required to complete authentication of new token (just need to make a call using get())
-    __get_device_info();
+    __get_device_info()
 
 # makes API call to get thermostat data for device
 def __get_device_info():
