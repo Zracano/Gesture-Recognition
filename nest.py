@@ -1,7 +1,7 @@
 # importing pip._vendor.requests because [#import requests] does not work on vscode
 # might need to change to [#import requests] for Raspberry Pi
 import pip._vendor.requests as requests
-from secrets import PROJECT_ID, DEVICE_ID, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN
+from nest_secrets import PROJECT_ID, DEVICE_ID, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN
 
 '''
 Methods (available to use):

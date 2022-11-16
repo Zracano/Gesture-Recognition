@@ -3,14 +3,15 @@ from cvzone.HandTrackingModule import HandDetector
 import numpy as np
 import text_to_speech
 import time
+from threading import Thread
 
 '''
 This program is able to detect a circular motion gesture with the index finger along with the
 rotation direction of the gesture.
 
 The purpose of this program is to be able to take input via hand gestures instead of using
-an app or speaking. The use case for this hand gesture is for changing the temperature of a NEST
-thermostat and or the volume of a speaker.
+an app or speaking. The use case for this pattern detector is for changing the temperature 
+of a NEST thermostat and or the volume of a speaker if playing music.
 
 This is accomplished by following these steps:
 1. detect if there is a hand and find the index finger
@@ -18,7 +19,6 @@ This is accomplished by following these steps:
 3. follow path of finger by "drawing" the path on a separate window named "canvas"
 4. if the path comes back near the starting point, it is assumed that this MIGHT be a circle,
     therefore, send it to cv2.HoughCircles() and see if circle(s) were found
-5. increment number of revolutions if found
 
 Info: 
 Some logic was added to handle jerky motions.
@@ -29,7 +29,10 @@ Limitations:
 
 '''
 
-class Helper:
+def init():
+    return Helper()
+
+class Helper:  
     # constants
     WHITE = (255, 255, 255)
     END_RADIUS = 40
@@ -42,22 +45,29 @@ class Helper:
     NO_ROTATION = "NO-ROTATION"
     EMPTY_VALUE = -1
     TIME_BETWEEN_COMMANDS = 4
+    EMPTY = 0
     
     # variables
     last_x1, last_y1 = EMPTY_VALUE, EMPTY_VALUE
-    canvas = ""
-    num_revolutions = 0
+    num_revolutions = EMPTY
     circle_points = []
     finger_color = WHITE
-    detector = ""
-    rotation_direction = 0
-    last_command_time = 0
+    rotation_direction = EMPTY
+    last_command_time = EMPTY
     
-def init():
-    # create canvas (window) for the gestures
-    Helper.canvas = np.zeros((500, 500), np.uint8)
-    # setting up hand detector
-    Helper.detector = HandDetector(maxHands=1, minTrackCon=0.75, detectionCon=0.75)
+    def __init__(self):
+        # setting up hand detector
+        self.detector = HandDetector(maxHands=1, minTrackCon=0.75, detectionCon=0.75) 
+        # create canvas (window) for the gestures
+        self.canvas = np.zeros((500, 500), np.uint8)
+    
+    def clear_canvas(self):
+        self.canvas = np.zeros((500, 500), np.uint8)
+    
+def run(img, program_data):   
+    # run on a different thread
+    thread = Thread(target = pattern_recognition, args =(img, program_data, ))
+    thread.start()
 
 # returns the rotation direction
 def getRotationDirection():
@@ -68,11 +78,11 @@ def getRotationDirection():
     else:
         return Helper.NO_ROTATION
 
-def run(img):     
-    # flip the image so it is not invertered when "drawing" pattern
+def pattern_recognition(img, program_data):
+     # flip the image so it is not invertered when "drawing" pattern
     img = cv2.flip(img, 1)
     # add hand skeleton to image to detect hand and differentiate between fingers
-    hands, img = Helper.detector.findHands(img, flipType=False) 
+    hands, img = program_data.detector.findHands(img, flipType=False) 
 
     # gesture works ONLY on right hand, as this is sufficient for project
     if hands and hands[0]['type'] == "Right":
@@ -85,7 +95,7 @@ def run(img):
             x1, y1 = index_finger_pos[0:2]
             
             # draw a dot at the current index finger position
-            cv2.circle(Helper.canvas, index_finger_pos, Helper.DRAW_THICKNESS-5, Helper.finger_color, cv2.FILLED)
+            cv2.circle(program_data.canvas, index_finger_pos, Helper.DRAW_THICKNESS-5, Helper.finger_color, cv2.FILLED)
 
             # initialize last coordinates if they have not been set yet
             if Helper.last_x1 == Helper.EMPTY_VALUE and Helper.last_y1 == Helper.EMPTY_VALUE:
@@ -94,7 +104,7 @@ def run(img):
             # make sure that the last point is near the current point to prevent jerky motion
             if not abs(Helper.last_x1 - x1) > Helper.MIN_POINTS or not abs(Helper.last_y1 - y1) > Helper.MIN_POINTS:
                 # draw a line between last point to current point
-                cv2.line(Helper.canvas, (Helper.last_x1, Helper.last_y1), (x1, y1), Helper.finger_color, Helper.DRAW_THICKNESS)
+                cv2.line(program_data.canvas, (Helper.last_x1, Helper.last_y1), (x1, y1), Helper.finger_color, Helper.DRAW_THICKNESS)
 
                 
                 # prevent duplicate points
@@ -115,13 +125,13 @@ def run(img):
                 # only if it going back around (much like a circle -> what is desired)
                 # also check if user actually went out of the starting circle
                 if dist**2 <= Helper.END_RADIUS**2 and Helper.IS_DRAW_OUT_OF_CIRCLE:
-                    if is_circle_found():
+                    if is_circle_found(program_data):
                         # ensure that there is a delay between current and next command 
                         if time.time() - Helper.last_command_time > Helper.TIME_BETWEEN_COMMANDS:
                             Helper.IS_DRAW_OUT_OF_CIRCLE = False
                             Helper.num_revolutions+=1
                             # reset canvas since a circle was detected
-                            clear_canvas()
+                            reset_pattern(program_data)
                             text_to_speech.run(f" {Helper.num_revolutions} revolutions detected:  {getRotationDirection()}")
                             Helper.last_command_time = time.time()
                             # reset rotation direction
@@ -136,15 +146,16 @@ def run(img):
             else:
                 # jerky motion detected (distance between last and current point is not within 
                 # threshold), therefore clearing drawing and allowing user to restart drawing pattern
-                clear_canvas()
+                reset_pattern(program_data)
         else:
             # clear canvas if index finger is not up
-            clear_canvas()
+            reset_pattern(program_data)
     else:
         # reset number of revolutions if there is no hand present in camera view
         if Helper.num_revolutions > 0:
             Helper.num_revolutions = 0
-            
+    
+    return
 
 # detects if index finger is higher than all other fingers (aka index finger is up)
 def is_gesture_detected(fingertip_positions):
@@ -157,15 +168,15 @@ def is_gesture_detected(fingertip_positions):
         False
 
 # returns true if gesture path was similar to a circle, false otherwise
-def is_circle_found():
+def is_circle_found(program_data):
     # make sure there is actually a pattern and that there is 
     # at least a minimum number of points
-    if Helper.canvas is None:
+    if program_data.canvas is None:
         return False
 
     try:
         # see if there is a circle found in canvas (the pattern drawn)
-        circles = cv2.HoughCircles(Helper.canvas, cv2.HOUGH_GRADIENT, 1, 20, param1=30, param2=20, minRadius=0, maxRadius=0)          
+        circles = cv2.HoughCircles(program_data.canvas, cv2.HOUGH_GRADIENT, 1, 20, param1=30, param2=20, minRadius=0, maxRadius=0)          
     except:
         return False
     
@@ -177,8 +188,8 @@ def is_circle_found():
     return True
     
 # clear the gesture path on window and reset circle points
-def clear_canvas():
-    Helper.canvas = np.zeros((500, 500), np.uint8)
+def reset_pattern(program_data):
+    program_data.clear_canvas()
     Helper.last_x1, Helper.last_y1 = Helper.EMPTY_VALUE, Helper.EMPTY_VALUE
     Helper.circle_points = []
     Helper.IS_DRAW_OUT_OF_CIRCLE = False

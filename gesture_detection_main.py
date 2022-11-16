@@ -1,16 +1,24 @@
 import pattern_detection
 import cv2
 
-#
-# CS530 Systems Programming
-# Gesture-Based Home Control
-# Date Created : Oct 12, 2022
-# 
+'''
+    Fall 2022 SDSU - CS530 (Systems Programming)
+    
+    Group: 
+    [Amar Khanshali] [Edgar Navarro] [Thu Vu] [Isaac Pompa]
+    
+    Project - Gesture-Based Home Control:
+    Control your home using predetermined hand gestures without having to get up from your seat.
+    Features include: turn a device (like a fan or light) on/off, changing thermostat mode and 
+    adjusting temperature by simply doing a circle pattern, and playing your favorite playlist
+    from spotify and changing/pausing songs.
+    
+    Date Created : Oct 12, 2022
+'''
 
-
-if __name__ == '__main__':
-    # initialize canvas and variable(s) for pattern detection
-    pattern_detection.init()
+def main():
+    # initialize pattern detection
+    pattern_detection_data = pattern_detection.init()
     
     # begin capture of video
     cap = cv2.VideoCapture(0)
@@ -20,12 +28,12 @@ if __name__ == '__main__':
         _, img = cap.read()
         
         # detect is a circle pattern is recognized
-        pattern_detection.run(img)
+        pattern_detection.run(img, pattern_detection_data)
         
         ############## FOR TESTING PURPOSES ############## 
         ############  REMOVING AFTER TESTING  ############
         # show window (this will contain the gesture path)
-        cv2.imshow("canvas", pattern_detection.Helper.canvas)
+        cv2.imshow("Pattern Canvas", pattern_detection_data.canvas)
         # show window (basic camera view)
         # cv2.imshow("camera", img)
         # press 'q' to exit program
@@ -36,3 +44,7 @@ if __name__ == '__main__':
     # release resource and close windows
     cap.release()
     cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    main()

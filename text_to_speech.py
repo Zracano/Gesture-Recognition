@@ -5,9 +5,9 @@ from time import sleep
 import time
 import os
 
-'''
-Program simply converts text string to speech.
-'''
+# -------------------------------------------------------
+# Program simply converts text to speech and plays it
+# -------------------------------------------------------
 
 # run in a different thread so it runs concurrently
 def run(text):
@@ -15,9 +15,16 @@ def run(text):
     thread.start()
 
 def text_to_speech(text):
+    # ensure filename is unique
     filename = f"output_{time.time()}.mp3"
+    
     # convert text to speech
-    audio = gTTS(text=text, lang="en", slow=False)
+    try:
+        audio = gTTS(text=text, lang="en", slow=False)
+    except: 
+        # there might not be an internet connection
+        return
+    
     # save text to speech in a mp3 file
     audio.save(filename)
     # start playing audio file
