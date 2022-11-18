@@ -12,27 +12,34 @@
 # All methods return "ERROR" or "CONNECTION_ERROR" if there is an error #
 #########################################################################
 
-# get current mode of Nest Thermostat ("COOL", "HEAT", "OFF")
+# get current mode of Nest Thermostat 
+# returns ("COOL", "HEAT", "OFF")
 get_current_temp_mode()
 
-# get current temp ("OFF" -> 0, "HOT" or "COOL" -> value > 0)
+# get current temp 
+# returns ("OFF" -> 0, "HOT" or "COOL" -> temperature > 0)
 get_current_temp()
 
-# parameter: value - int{set-temperate via [number]} -OR- string{set-mode via ["OFF", "HOT", "COOL"]}
-# parameter: command - string{"SetCool", "SetHeat", "SetMode"}
-# info 1: "SetCool", "SetHeat" used with setting temperate number
-# info 2: "OFF", "HOT", "COOL" used with "SetMode"
-# Sample 1: update_thermostat(72, "SetCool" or "SetHeat")
-# Sample 2: update_thermostat("OFF" or "HOT" or "COOL", "SetMode")
+# parameter 1: value - int{set-temperature via [number]} -OR- string{set-mode via ["OFF", "HOT", "COOL"]}
+# parameter 2: command - string{"SetCool", "SetHeat", "SetMode"}
+# info 1: "SetCool", "SetHeat" are used alongside temperate number
+# info 2: "OFF", "HOT", "COOL" used alongside "SetMode"
+# Sample Method 1: update_thermostat(72, "SetCool" or "SetHeat")
+# Sample Method 2: update_thermostat("OFF" or "HOT" or "COOL", "SetMode")
+# returns nothing if successful
 update_thermostat(value, command)
 ```
 
 #### Spotify API
+###### Purpose: Play a spotify playlist and control playback. 
+
 ```python
 # TO DO
 ```
 
 #### Kasa API
+###### Purpose: Control a fan/light to turn ON or OFF.
+
 ```python
 # TO DO
 ```
@@ -84,7 +91,7 @@ To activate the environment:
 ```shell
 conda env create -f environment.yml
 
-conda activate gesture_env
+conda activate GestureRecognition
 
 conda env list
 ```
@@ -110,9 +117,6 @@ pip install
 we need to update our environment.yml file by doing
 ```shell
 conda env export > environment.yml
-
-# after this, go to environment.yml file and delete last line (starts with "prefix")
-
 ```
 
 If we pull a new environment.yml file we simply update or environment by doing
