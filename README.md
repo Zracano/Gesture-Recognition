@@ -17,12 +17,12 @@
 get_current_temp_mode()
 
 # get current temp 
-# returns int (mode = "OFF" -> 0 -OR- mode ="HOT" or "COOL" -> temperature > 0)
+# returns int (mode="OFF" -> 0 -OR- mode="HOT" or "COOL" -> temperature)
 get_current_temp()
 
 # parameter 1: value - int{set-temperature via [number]} -OR- string{set-mode via ["OFF", "HOT", "COOL"]}
 # parameter 2: command - string{"SetCool", "SetHeat", "SetMode"}
-# info 1: "SetCool", "SetHeat" are used alongside temperate number
+# info 1: "SetCool", "SetHeat" are used alongside temperature number
 # info 2: "OFF", "HOT", "COOL" used alongside "SetMode"
 # Sample Method 1: update_thermostat(72, "SetCool" or "SetHeat")
 # Sample Method 2: update_thermostat("OFF" or "HOT" or "COOL", "SetMode")
