@@ -3,7 +3,7 @@
 ## APIs
 
 #### Nest API
-###### Purpose: Control thermostat temperature and modes (HOT, COOL, OFF).
+###### Purpose: Control thermostat temperature and modes.
 
 ```python
 # How to use:
@@ -12,25 +12,30 @@
 # All methods return "ERROR" or "CONNECTION_ERROR" if there is an error #
 #########################################################################
 
-# get current mode of Nest Thermostat
-# returns: COOL, HEAT, or OFF
+# get current mode of Nest Thermostat ("COOL", "HEAT", "OFF")
 get_current_temp_mode()
 
-# get current temp
-# if current mode is HEAT or COOL, returns a temperature
-# if mode is OFF, returns a 0
-# returns: int (temperature value)
+# get current temp ("OFF" -> 0, "HOT" or "COOL" -> value > 0)
 get_current_temp()
 
-# change temperature: {value} = int and {command} = "SetCool" or "SetHeat"
-# change temperature mode: {value} = "OFF", "HOT", or "COOL" and {command} = "SetMode"
-# return nothing is successful
+# parameter: value - int{set-temperate via [number]} -OR- string{set-mode via ["OFF", "HOT", "COOL"]}
+# parameter: command - string{"SetCool", "SetHeat", "SetMode"}
+# info 1: "SetCool", "SetHeat" used with setting temperate number
+# info 2: "OFF", "HOT", "COOL" used with "SetMode"
+# Sample 1: update_thermostat(72, "SetCool" or "SetHeat")
+# Sample 2: update_thermostat("OFF" or "HOT" or "COOL", "SetMode")
 update_thermostat(value, command)
 ```
 
 #### Spotify API
+```python
+# TO DO
+```
 
 #### Kasa API
+```python
+# TO DO
+```
 
 ## Git:
 ```shell
@@ -54,7 +59,7 @@ git commit -m "explain what you did, but please keep it nice and short"
 # push your changes to Github
 git push
 
-# NICE TO KNOW COMMANDS
+#### NICE TO KNOW COMMANDS ####
 # see the status of the project files aka changed files
 git status
 # to get the most updated project files
@@ -67,6 +72,8 @@ git checkout {branch-name}
 git stash 
 # To restore local changes
 git stash pop
+# reset changes since last commit
+git reset --hard HEAD
 ```
 ## Creating an environment:
 [Instructions to install conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
