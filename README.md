@@ -13,11 +13,11 @@
 #########################################################################
 
 # get current mode of Nest Thermostat 
-# returns ("COOL", "HEAT", "OFF")
+# returns string ("COOL" -OR- "HEAT" -OR- "OFF")
 get_current_temp_mode()
 
 # get current temp 
-# returns ("OFF" -> 0, "HOT" or "COOL" -> temperature > 0)
+# returns int (mode = "OFF" -> 0 -OR- mode ="HOT" or "COOL" -> temperature > 0)
 get_current_temp()
 
 # parameter 1: value - int{set-temperature via [number]} -OR- string{set-mode via ["OFF", "HOT", "COOL"]}
