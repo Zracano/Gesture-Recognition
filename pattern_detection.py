@@ -6,26 +6,26 @@ import time
 from threading import Thread
 
 '''
-This program is able to detect a circular motion gesture with the index finger along with the
+This program is able to detect a circular pattern made with the index finger along with the
 rotation direction of the gesture.
 
 The purpose of this program is to be able to take input via hand gestures instead of using
 an app or speaking. The use case for this pattern detector is for changing the temperature 
-of a NEST thermostat and or the volume of a speaker if playing music.
+of a NEST thermostat and or the volume of a speaker when playing music.
 
 This is accomplished by following these steps:
-1. detect if there is a hand and find the index finger
-2. make sure index finger is on top on all other fingers (aka you are pointing with your right index finger)
-3. follow path of finger by "drawing" the path on a separate window named "canvas"
-4. if the path comes back near the starting point, it is assumed that this MIGHT be a circle,
-    therefore, send it to cv2.HoughCircles() and see if circle(s) were found
+1. Detect if the right hand is present in a image/frame and find the position of the index finger.
+2. Make sure index finger is on top on all other fingers (aka you are pointing with your right index finger).
+3. Follow the path of index finger by "drawing" the path on a window named "Pattern Canvas"
+4. If the path comes back near the starting point, it is assumed that this MIGHT be a circle,
+    therefore let cv2.HoughCircles() method determine if a circle was found.
 
 Info: 
 Some logic was added to handle jerky motions.
 
 Limitations: 
-1. sometimes it cannot recognize the pattern right away, but it usually works on the second revolution
-2. sometimes it deletes the pattern because it detects a jerk, probably due to skipped frames
+1. On occasion, it cannot recognize the pattern right away, but it usually works on the second revolution.
+2. Sometimes it deletes the pattern because it detects a jerk, probably due to processing speed. 
 
 '''
 
@@ -46,6 +46,8 @@ class Helper:
     EMPTY_VALUE = -1
     TIME_BETWEEN_COMMANDS = 4
     EMPTY = 0
+    RIGHT_HAND = "Right"
+    HAND_DATA = "lmList"
     
     # variables
     last_x1, last_y1 = EMPTY_VALUE, EMPTY_VALUE
@@ -68,8 +70,10 @@ def run(img, program_data):
     # run on a different thread
     thread = Thread(target = pattern_recognition, args =(img, program_data, ))
     thread.start()
+    # wait until method is finished to proceed
+    thread.join()
 
-# returns the rotation direction
+# returns the rotation direction (clockwise or counter-clockwise)
 def getRotationDirection():
     if Helper.rotation_direction > 0:
         return Helper.CLOCKWISE
@@ -78,17 +82,18 @@ def getRotationDirection():
     else:
         return Helper.NO_ROTATION
 
+# determines if a circle pattern was drawn on "canvas"
 def pattern_recognition(img, program_data):
-     # flip the image so it is not invertered when "drawing" pattern
+    # flip the image so it is not invertered when "drawing" pattern
     img = cv2.flip(img, 1)
     # add hand skeleton to image to detect hand and differentiate between fingers
     hands, img = program_data.detector.findHands(img, flipType=False) 
 
     # gesture works ONLY on right hand, as this is sufficient for project
-    if hands and hands[0]['type'] == "Right":
-        if is_gesture_detected(hands[0]['lmList']):
+    if hands and hands[0]['type'] == Helper.RIGHT_HAND:
+        if is_gesture_detected(hands[0][Helper.HAND_DATA]):
             # select index finger
-            index_finger = hands[0]['lmList'][8]
+            index_finger = hands[0][Helper.HAND_DATA][8]
             # find current position of index finger
             index_finger_pos = index_finger[0:2]
             # get the x and y coordinate of the index finger
@@ -106,12 +111,12 @@ def pattern_recognition(img, program_data):
                 # draw a line between last point to current point
                 cv2.line(program_data.canvas, (Helper.last_x1, Helper.last_y1), (x1, y1), Helper.finger_color, Helper.DRAW_THICKNESS)
 
-                
                 # prevent duplicate points
                 if [x1, y1] not in Helper.circle_points:
                     Helper.circle_points.append([x1, y1])
-                    # find the cross product of the two vectors from the origin of rotation
-                    # used to see if vector points are going clockwise or counter-clockwise
+                    # find the cross product of the last and current coordinate, this is 
+                    # used to determine the rotation (clockwise (+) vs counter-clockwise (-))
+                    # and all these rotations are added to determine the actual rotation of pattern
                     Helper.rotation_direction += ((Helper.last_x1 * y1) - (x1 * Helper.last_y1))
                 
                 # set the last coordinates to be the new coordinate of the index finger
@@ -123,10 +128,11 @@ def pattern_recognition(img, program_data):
                 # checks if current point is near the starting point
                 # this is to make sure that we check if the pattern is a circle
                 # only if it going back around (much like a circle -> what is desired)
-                # also check if user actually went out of the starting circle
+                # also check if user actually went out of the starting point area
                 if dist**2 <= Helper.END_RADIUS**2 and Helper.IS_DRAW_OUT_OF_CIRCLE:
                     if is_circle_found(program_data):
-                        # ensure that there is a delay between current and next command 
+                        # circle pattern was detected, ensure that there is 
+                        # a delay between current and next command 
                         if time.time() - Helper.last_command_time > Helper.TIME_BETWEEN_COMMANDS:
                             Helper.IS_DRAW_OUT_OF_CIRCLE = False
                             Helper.num_revolutions+=1
@@ -137,6 +143,7 @@ def pattern_recognition(img, program_data):
                             # reset rotation direction
                             Helper.rotation_direction = 0
                     else:
+                        # circle not found
                         return
                 elif dist**2 >= Helper.END_RADIUS**2:
                     # pattern draw is now out of starting circle
@@ -157,37 +164,37 @@ def pattern_recognition(img, program_data):
     
     return
 
-# detects if index finger is higher than all other fingers (aka index finger is up)
+# detects if index finger position is higher than all other fingers (aka index finger is up)
 def is_gesture_detected(fingertip_positions):
     thumb, index_finger, middle_finger = fingertip_positions[4], fingertip_positions[8], fingertip_positions[12]
     ring_finger, pinky_finger = fingertip_positions[16], fingertip_positions[0]
 
     if index_finger[1] < min(middle_finger[1], ring_finger[1], pinky_finger[1], thumb[1]):
-        return index_finger
+        return True
     else:
         False
 
 # returns true if gesture path was similar to a circle, false otherwise
 def is_circle_found(program_data):
-    # make sure there is actually a pattern and that there is 
-    # at least a minimum number of points
-    if program_data.canvas is None:
+    # make sure that the canvas is not null and there is at least one point drawn
+    if program_data.canvas is None and len(Helper.circle_points) > Helper.EMPTY:
         return False
 
     try:
         # see if there is a circle found in canvas (the pattern drawn)
-        circles = cv2.HoughCircles(program_data.canvas, cv2.HOUGH_GRADIENT, 1, 20, param1=30, param2=20, minRadius=0, maxRadius=0)          
+        circles = cv2.HoughCircles(program_data.canvas, cv2.HOUGH_GRADIENT, 
+                                   1, 20, param1=30, param2=20, minRadius=0, maxRadius=0)          
     except:
         return False
     
-    # if no circle was found, return false
+    # if a circle was not found, return false
     if circles is None or len(circles) == 0:
         return False
     
     # else, return true since circles is not empty, indicating a circle pattern was found
     return True
     
-# clear the gesture path on window and reset circle points
+# clear the gesture path on window and reset variables
 def reset_pattern(program_data):
     program_data.clear_canvas()
     Helper.last_x1, Helper.last_y1 = Helper.EMPTY_VALUE, Helper.EMPTY_VALUE

@@ -2,7 +2,7 @@ import pattern_detection
 import cv2
 
 '''
-    Fall 2022 SDSU - CS530 (Systems Programming)
+    SDSU [Fall 2022] - CS530 (Systems Programming)
     
     Group: 
     [Amar Khanshali] [Edgar Navarro] [Thu Vu] [Isaac Pompa]
@@ -10,7 +10,7 @@ import cv2
     Project - Gesture-Based Home Control:
     Control your home using predetermined hand gestures without having to get up from your seat.
     Features include: turn a device (like a fan or light) on/off, changing thermostat mode and 
-    adjusting temperature by simply doing a circle pattern, and playing your favorite playlist
+    adjust the temperature by simply doing a circle pattern, and playing your favorite playlist
     from spotify and changing/pausing songs.
     
     Date Created : Oct 12, 2022

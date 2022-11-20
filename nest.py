@@ -1,24 +1,26 @@
-# importing pip._vendor.requests because [#import requests] does not work on vscode
-# might need to change to [#import requests] for Raspberry Pi
-import pip._vendor.requests as requests
+import requests
 from nest_secrets import PROJECT_ID, DEVICE_ID, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN
 
 '''
+This program utilizes the Nest API in order to retrieve 
+and or set temperature data for a thermostat. 
+
 Methods (available to use):
 # RETURN VALUES
-# returns {ERROR or CONNECTION_ERROR} depending on error
-# nothing if successful
+# returns nothing if successful or {ERROR or CONNECTION_ERROR}
 
-# get current mode of Nest Thermostat (COOL, HEAT, OFF)
+# get current mode of Nest Thermostat ("COOL", "HEAT", "OFF")
 get_current_temp_mode()
 
-# get current temp (if mode is OFF, a 0 is returned)
+# get current temp ("OFF" -> 0, "HOT" or "COOL" -> value > 0)
 get_current_temp()
 
-# value (int{set temperate [number]}, or string{set mode ["OFF", "HOT", "COOL"]})
-# command (string{"SetCool", "SetHeat", "SetMode"})
-# info: "SetCool", "SetHeat" used with setting temperate number
-# info: "OFF", "HOT", "COOL" used with "SetMode"
+# parameter: value - int{set-temperate via [number]} -OR- string{set-mode via ["OFF", "HOT", "COOL"]}
+# parameter: command - string{"SetCool", "SetHeat", "SetMode"}
+# info 1: "SetCool", "SetHeat" used with setting temperate number
+# info 2: "OFF", "HOT", "COOL" used with "SetMode"
+# Sample 1: update_thermostat(72, "SetCool" or "SetHeat")
+# Sample 2: update_thermostat("OFF" or "HOT" or "COOL", "SetMode")
 update_thermostat(value, command)
 '''
 
