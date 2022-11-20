@@ -3,7 +3,7 @@
 ## APIs
 
 #### Nest API
-###### Purpose: Control thermostat temperature and modes (HOT, COOL, OFF).
+###### Purpose: Control thermostat temperature and modes.
 
 ```python
 # How to use:
@@ -12,25 +12,37 @@
 # All methods return "ERROR" or "CONNECTION_ERROR" if there is an error #
 #########################################################################
 
-# get current mode of Nest Thermostat
-# returns: COOL, HEAT, or OFF
+# get current mode of Nest Thermostat 
+# returns string ("COOL" -OR- "HEAT" -OR- "OFF")
 get_current_temp_mode()
 
-# get current temp
-# if current mode is HEAT or COOL, returns a temperature
-# if mode is OFF, returns a 0
-# returns: int (temperature value)
+# get current temp 
+# returns int (mode="OFF" -> 0 -OR- mode="HOT" or "COOL" -> temperature)
 get_current_temp()
 
-# change temperature: {value} = int and {command} = "SetCool" or "SetHeat"
-# change temperature mode: {value} = "OFF", "HOT", or "COOL" and {command} = "SetMode"
-# return nothing is successful
+# parameter 1: value - int{set-temperature via [number]} -OR- string{set-mode via ["OFF", "HOT", "COOL"]}
+# parameter 2: command - string{"SetCool", "SetHeat", "SetMode"}
+# info 1: "SetCool", "SetHeat" are used alongside temperature number
+# info 2: "OFF", "HOT", "COOL" used alongside "SetMode"
+# Sample Method 1: update_thermostat(72, "SetCool" or "SetHeat")
+# Sample Method 2: update_thermostat("OFF" or "HOT" or "COOL", "SetMode")
+# returns nothing if successful
 update_thermostat(value, command)
 ```
 
 #### Spotify API
+###### Purpose: Play a spotify playlist and control playback. 
+
+```python
+# TO DO
+```
 
 #### Kasa API
+###### Purpose: Control a fan/light to turn ON or OFF.
+
+```python
+# TO DO
+```
 
 ## Git:
 ```shell
@@ -54,7 +66,7 @@ git commit -m "explain what you did, but please keep it nice and short"
 # push your changes to Github
 git push
 
-# NICE TO KNOW COMMANDS
+#### NICE TO KNOW COMMANDS ####
 # see the status of the project files aka changed files
 git status
 # to get the most updated project files
@@ -67,6 +79,8 @@ git checkout {branch-name}
 git stash 
 # To restore local changes
 git stash pop
+# reset changes since last commit
+git reset --hard HEAD
 ```
 ## Creating an environment:
 [Instructions to install conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
@@ -77,7 +91,7 @@ To activate the environment:
 ```shell
 conda env create -f environment.yml
 
-conda activate gesture_env
+conda activate GestureRecognition
 
 conda env list
 ```
@@ -103,9 +117,6 @@ pip install
 we need to update our environment.yml file by doing
 ```shell
 conda env export > environment.yml
-
-# after this, go to environment.yml file and delete last line (starts with "prefix")
-
 ```
 
 If we pull a new environment.yml file we simply update or environment by doing
