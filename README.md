@@ -34,7 +34,23 @@ update_thermostat(value, command)
 ###### Purpose: Play a spotify playlist and control playback. 
 
 ```python
-# TO DO
+# How to use:
+
+#########################################################################
+# All methods return "ERROR" or "CONNECTION_ERROR" if there is an error #
+#########################################################################
+
+# starts/resumes playback
+start_playback()
+
+# pauses playback
+pause_playback()
+
+# skips to the next song in playback
+skip_playback()
+
+# goes back to previous song in playback
+previous_playback()
 ```
 
 #### Kasa API
