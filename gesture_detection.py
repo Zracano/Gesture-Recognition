@@ -70,7 +70,7 @@ def detect_gesture(image, hands):
         HandLandmark.THUMB_IP].y < \
             hand_landmarks.landmark[HandLandmark.THUMB_MCP].y < \
             hand_landmarks.landmark[HandLandmark.INDEX_FINGER_MCP].y < hand_landmarks.landmark[
-        HandLandmark.PINKY_MCP].y:
+        HandLandmark.PINKY_MCP].y and hand_landmarks.landmark[HandLandmark.PINKY_TIP].x < hand_landmarks.landmark[HandLandmark.PINKY_PIP].x:
         return "up"
     # recognize thumbs down
     max_x = max(hand_landmarks.landmark[HandLandmark.INDEX_FINGER_MCP].x,
@@ -168,12 +168,12 @@ def detect_gesture(image, hands):
     # recognize two fingers up
     diff_8_12 = calculate_distance(hand_landmarks.landmark[HandLandmark.INDEX_FINGER_TIP],
                                    hand_landmarks.landmark[HandLandmark.MIDDLE_FINGER_TIP])
-    diff_4_13 = calculate_distance(hand_landmarks.landmark[HandLandmark.THUMB_TIP],
-                                   hand_landmarks.landmark[HandLandmark.RING_FINGER_MCP])
+    diff_4_16 = calculate_distance(hand_landmarks.landmark[HandLandmark.THUMB_TIP],
+                                   hand_landmarks.landmark[HandLandmark.RING_FINGER_TIP])
     if hand_landmarks.landmark[HandLandmark.PINKY_TIP].y > hand_landmarks.landmark[HandLandmark.RING_FINGER_MCP].y and \
             hand_landmarks.landmark[HandLandmark.RING_FINGER_TIP].y > hand_landmarks.landmark[
         HandLandmark.MIDDLE_FINGER_MCP].y and \
-            diff_8_12 < 0.06 and diff_4_13 < 0.08:
+            diff_8_12 < 0.08 and diff_4_16 < 0.08:
         return "two"
 
     return None
