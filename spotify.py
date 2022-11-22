@@ -1,11 +1,10 @@
 from datetime import datetime, timedelta
-import time
 from spotify_secrets import DEVICE_ID, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN
 import requests
 
 # Methods (available to use):
 # RETURN VALUES
-# returns {ERROR or CONNECTION_ERROR} dependong on error
+# returns {ERROR or CONNECTION_ERROR} depending on error
 # nothing if successful
 
 # starts/resumes the playback
@@ -55,7 +54,6 @@ def __refresh_token(bypass_check=False):
             return _SpotifyConstants.SUCCESS
     # Otherwise, refresh token
     # Generate aspects of API call
-    #payload = f'grant_type=refresh_token&refresh_token={REFRESH_TOKEN}&client_id={CLIENT_ID}&client_secret={CLIENT_SECRET}'
     payload = {
         'grant_type': 'refresh_token',
         'refresh_token': f'{REFRESH_TOKEN}',
@@ -174,19 +172,6 @@ def pause_playback():
 def skip_playback():
     __skip_playback()
 
-# Previous Playbak (public)
+# Previous Playback (public)
 def previous_playback():
     __previous_playback()
-
-def main():
-    # for testing purposes
-    start_playback()
-    time.sleep(5)
-    skip_playback()
-    time.sleep(5)
-    previous_playback()
-    time.sleep(5)
-    pause_playback()
-    
-if __name__ == '__main__':
-    main()
