@@ -1,5 +1,4 @@
 import cv2
-
 import gesture_detection
 import pattern_detection
 

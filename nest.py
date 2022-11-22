@@ -1,4 +1,5 @@
 import requests
+import pip._vendor.requests as requests
 from nest_secrets import PROJECT_ID, DEVICE_ID, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN
 
 '''

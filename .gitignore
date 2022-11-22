@@ -161,6 +161,5 @@ cython_debug/
 
 # local files to not publish
 
-nest_secrets.py
-spotify_secrets_private.py
+nest_secrets_private.py
 
