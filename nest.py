@@ -1,6 +1,6 @@
 import requests
 import pip._vendor.requests as requests
-from nest_secrets_private import PROJECT_ID, DEVICE_ID, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN
+from nest_secrets import PROJECT_ID, DEVICE_ID, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN
 
 '''
 This program utilizes the Nest API in order to retrieve 
