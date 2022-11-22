@@ -50,7 +50,7 @@ class _Helper:
         }
     
     # params for API Calls
-    def get_params(value, command):
+    def get_params(self, value, command):
         param = ""
         command_mode = "ThermostatTemperatureSetpoint" if command in {_Helper.COOL_COMMAND, _Helper.HEAT_COMMAND} \
             else "ThermostatMode"
