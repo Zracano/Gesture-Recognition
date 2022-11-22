@@ -43,7 +43,7 @@ class _Helper:
     from_f_to_celsuis = lambda fahrenheit : round((fahrenheit - 32) / 1.8, 1)
     
     # headers for API Calls
-    def get_headers():
+    def get_headers(self):
         return {
             'Content-Type': 'application/json',
             'Authorization': f'Bearer {_Helper.ACCESS_TOKEN}',
