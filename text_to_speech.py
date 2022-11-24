@@ -4,6 +4,7 @@ from threading import Thread
 from time import sleep
 import time
 import os
+from sys import platform
 
 # -------------------------------------------------------
 # Program simply converts text to speech and plays it
@@ -27,8 +28,11 @@ def text_to_speech(text):
     
     # save text to speech in a mp3 file
     audio.save(filename)
-    # start playing audio file
-    os.system(f"start {filename}")
+    # start playing audio file (change command based on system)
+    if platform == "linux" or platform == "linux2":
+        os.system(f"mpg123 {filename}")
+    elif platform == "win32":
+        os.system(f"start {filename}")
     # delete file after it was played
     delete_file(filename)
     
