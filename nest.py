@@ -43,6 +43,7 @@ class _Helper:
     from_f_to_celsuis = lambda fahrenheit : round((fahrenheit - 32) / 1.8, 1)
     
     # headers for API Calls
+    @staticmethod
     def get_headers():
         return {
             'Content-Type': 'application/json',
@@ -50,6 +51,7 @@ class _Helper:
         }
     
     # params for API Calls
+    @staticmethod
     def get_params(value, command):
         param = ""
         command_mode = "ThermostatTemperatureSetpoint" if command in {_Helper.COOL_COMMAND, _Helper.HEAT_COMMAND} \

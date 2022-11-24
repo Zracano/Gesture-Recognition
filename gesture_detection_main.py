@@ -24,14 +24,23 @@ def main():
     gesture_detector_data = gesture_detection.init()
     # begin capture of video
     cap = cv2.VideoCapture(0)
-
+    gesture_list = []
+    frames = 8
     while True:
         # read current frame from camera
         _, img = cap.read()
 
         # detect is a circle pattern is recognized
         pattern_detection.run(img, pattern_detection_data)
-        gesture = gesture_detection.run(img, gesture_detector_data)
+        # detect if a gesture is recognized and push it into the queue
+        gesture_list.append(gesture_detection.run(img, gesture_detector_data))
+        # check if the gesture has been detected for a certain amount of frames
+        if len(gesture_list) >= frames:
+            if gesture_list.count(gesture_list[0]) == len(gesture_list) and gesture_list[0] is not None:
+                # print the gesture
+                print(gesture_list[0])
+            # clear the list
+            gesture_list.clear()
         ############## FOR TESTING PURPOSES ##############
         ############  REMOVING AFTER TESTING  ############
         # show window (this will contain the gesture path)

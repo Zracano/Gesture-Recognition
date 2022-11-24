@@ -25,6 +25,7 @@ class _Helper:
     token_expiration = None
 
     # Return header info for API calls
+    @staticmethod
     def get_headers():
         return {
             'Authorization': f"Bearer {_Helper.access_token}"
