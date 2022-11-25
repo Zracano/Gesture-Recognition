@@ -63,7 +63,7 @@ def main():
 
 
 def handle_gestures(gesture_list, frames):
-    
+    responses = [nest._Helper.ERROR, nest._Helper.CONNECTION_ERROR]
     # check if the gesture has been detected for a certain amount of frames
     if len(gesture_list) >= frames:
         if gesture_list.count(gesture_list[0]) == len(gesture_list) and gesture_list[0] is not None:
@@ -78,12 +78,23 @@ def handle_gestures(gesture_list, frames):
             elif current_gesture == "left":
                 spotify.previous_playback()
             elif current_gesture == "ok":
-                nest.update_thermostat(nest._Helper.COOL, nest._Helper.CHANGE_MODE_COMMAND)
+                response = nest.update_thermostat(nest._Helper.COOL, nest._Helper.CHANGE_MODE_COMMAND)
+                if response in responses:
+                    text_to_speech.run(pattern_detection.Helper.THERMOSTAT_ERROR_MESSAGE)
+                else:
+                    text_to_speech.run(f"Thermostat mode is currently set to {nest.get_current_temp_mode()}")
             elif current_gesture == "two":
                 response = nest.update_thermostat(nest._Helper.HEAT, nest._Helper.CHANGE_MODE_COMMAND)
-                text_to_speech.run(f"Thermostat mode is currently set to {nest.get_current_temp_mode()}")
+                if response in responses:
+                    text_to_speech.run(pattern_detection.Helper.THERMOSTAT_ERROR_MESSAGE)
+                else:
+                    text_to_speech.run(f"Thermostat mode is currently set to {nest.get_current_temp_mode()}")
             elif current_gesture == "fist":
-                text_to_speech.run(f"Thermostat mode is currently set to {nest.get_current_temp_mode()}")
+                response = nest.get_current_temp_mode()
+                if response in responses:
+                    text_to_speech.run(pattern_detection.Helper.THERMOSTAT_ERROR_MESSAGE)
+                else:
+                    text_to_speech.run(f"Thermostat mode is currently set to {response}")
             elif current_gesture == "call":
                 # kasa.flip_switch()
                 pass
