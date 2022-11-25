@@ -19,8 +19,12 @@ import requests
 # goes back to a previous song and plays it
 # previous_playback()
 
-# return true if something is playing, else false
+# return playing status of device
 # is_playing()
+
+# Change playback volume 
+# paramter: increment - signed int {change volume by the increment value}
+# change_volume(increment):
 
 class _Helper:
     # Token info storage
@@ -199,7 +203,7 @@ def __previous_playback():
     else:
         return _SpotifyConstants.ERROR
     
-# return status of something is_playing 
+# return playing status of device
 def __is_playing():
      # Check token
     __refresh_token()

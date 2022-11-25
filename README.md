@@ -38,6 +38,7 @@ update_thermostat(value, command)
 
 #########################################################################
 # All methods return "ERROR" or "CONNECTION_ERROR" if there is an error #
+########################  "SUCCESS OTHERWISE"  ##########################
 #########################################################################
 
 # starts/resumes playback
@@ -51,6 +52,13 @@ skip_playback()
 
 # goes back to previous song in playback
 previous_playback()
+
+# return playing status of device
+is_playing()
+
+# Change playback volume 
+# paramter: increment - signed int{change volume via based on increment value}
+change_volume(increment):
 ```
 
 #### Kasa API
