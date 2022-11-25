@@ -213,7 +213,9 @@ def api_call(rotation_direction):
         
     # if spotify is playing, increment/decrement the volume depending on pattern rotation
     if spotify.is_playing():
-        spotify.change_volume(Helper.INCREMENT_SPOTIFY_VOLUME * (1 if is_increasing else -1))
+        new_volume = Helper.INCREMENT_SPOTIFY_VOLUME * (1 if is_increasing else -1)
+        spotify.change_volume(new_volume)
+        print(f"Spotify: new volume -> {new_volume}")
     else:
         # change thermostat temperature if device is ON
         current_temp_mode = nest.get_current_temp_mode()
@@ -225,9 +227,12 @@ def api_call(rotation_direction):
             current_temp = nest.get_current_temp()
             # change temperature (+1 or -1) based on pattern rotation
             response = nest.update_thermostat(current_temp + Helper.INCREMENT_THERMOSTAT, current_mode)
+            # if there was an error, notify user
             if response in [nest._Helper.ERROR, nest._Helper.CONNECTION_ERROR]:
                 text_to_speech.run(Helper.THERMOSTAT_ERROR_MESSAGE)
             else:
+                # temperature updated, notify
                 text_to_speech.run(Helper.create_message(current_temp_mode, current_temp))
         else:
+            # thermostat device is off, notify user
             text_to_speech.run(Helper.THERMOSTAT_OFF_MESSAGE)

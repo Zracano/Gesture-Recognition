@@ -1,6 +1,10 @@
 import cv2
 import gesture_detection
 import pattern_detection
+import spotify
+import nest
+import text_to_speech
+import kasa
 
 '''
     SDSU [Fall 2022] - CS530 (Systems Programming)
@@ -26,21 +30,22 @@ def main():
     cap = cv2.VideoCapture(0)
     gesture_list = []
     frames = 8
+    
     while True:
         # read current frame from camera
         _, img = cap.read()
 
         # detect is a circle pattern is recognized
         pattern_detection.run(img, pattern_detection_data)
+        
         # detect if a gesture is recognized and push it into the queue
         gesture_list.append(gesture_detection.run(img, gesture_detector_data))
-        # check if the gesture has been detected for a certain amount of frames
-        if len(gesture_list) >= frames:
-            if gesture_list.count(gesture_list[0]) == len(gesture_list) and gesture_list[0] is not None:
-                # print the gesture
-                print(gesture_list[0])
+        # handle gesture if found
+        gesture_found = handle_gestures(gesture_list, frames)
+        if gesture_found:
             # clear the list
             gesture_list.clear()
+            
         ############## FOR TESTING PURPOSES ##############
         ############  REMOVING AFTER TESTING  ############
         # show window (this will contain the gesture path)
@@ -55,6 +60,35 @@ def main():
     # release resource and close windows
     cap.release()
     cv2.destroyAllWindows()
+
+
+def handle_gestures(gesture_list, frames):
+    
+    # check if the gesture has been detected for a certain amount of frames
+    if len(gesture_list) >= frames:
+        if gesture_list.count(gesture_list[0]) == len(gesture_list) and gesture_list[0] is not None:
+            current_gesture = gesture_list[0]
+            # run command based on current gesture
+            if current_gesture == "up":
+                spotify.start_playback()
+            elif current_gesture == "down":
+                spotify.pause_playback()
+            elif current_gesture == "right":
+                spotify.skip_playback()
+            elif current_gesture == "left":
+                spotify.previous_playback()
+            elif current_gesture == "ok":
+                nest.update_thermostat(nest._Helper.COOL, nest._Helper.CHANGE_MODE_COMMAND)
+            elif current_gesture == "two":
+                response = nest.update_thermostat(nest._Helper.HEAT, nest._Helper.CHANGE_MODE_COMMAND)
+                text_to_speech.run(f"Thermostat mode is currently set to {nest.get_current_temp_mode()}")
+            elif current_gesture == "fist":
+                text_to_speech.run(f"Thermostat mode is currently set to {nest.get_current_temp_mode()}")
+            elif current_gesture == "call":
+                # kasa.flip_switch()
+                pass
+        return True
+    return False
 
 
 if __name__ == '__main__':
