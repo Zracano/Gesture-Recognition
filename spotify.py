@@ -5,7 +5,7 @@ import requests
 # Methods (available to use):
 # RETURN VALUES
 # returns {ERROR or CONNECTION_ERROR} depending on error
-# nothing if successful
+# returns SUCCESS otherwise
 
 # starts/resumes the playback
 # start_playback()
@@ -19,6 +19,9 @@ import requests
 # goes back to a previous song and plays it
 # previous_playback()
 
+# return true if something is playing, else false
+# is_playing()
+
 class _Helper:
     # Token info storage
     access_token = None
@@ -30,15 +33,25 @@ class _Helper:
         return {
             'Authorization': f"Bearer {_Helper.access_token}"
         }
-
+        
+    # Return DEVICE_ID in a json
+    @staticmethod
+    def get_device_json():
+        return  {
+            'device_ids': [
+                f'{DEVICE_ID}',
+            ],
+        }
+        
 class _SpotifyConstants:
     # URL endpoint for API calls
     TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token"
-    DEVICES_ENDPOINT = "https://api.spotify.com/v1/me/player/devices"
-    START_PLAYBACK_ENDPOINT = f"https://api.spotify.com/v1/me/player/play?{DEVICE_ID}"
-    PAUSE_PLAYBACK_ENDPOINT = f"https://api.spotify.com/v1/me/player/pause?{DEVICE_ID}"
-    SKIP_TO_NEXT_ENDPOINT = f"https://api.spotify.com/v1/me/player/next?{DEVICE_ID}"
-    SKIP_TO_PREVIOUS_ENDPOINT = f"https://api.spotify.com/v1/me/player/previous?{DEVICE_ID}"
+    DEFAULT_URL = "https://api.spotify.com/v1/me/player"
+    DEVICES_ENDPOINT = f"{DEFAULT_URL}/devices"
+    START_PLAYBACK_ENDPOINT = f"{DEFAULT_URL}/play?{DEVICE_ID}"
+    PAUSE_PLAYBACK_ENDPOINT = f"{DEFAULT_URL}/pause?{DEVICE_ID}"
+    SKIP_TO_NEXT_ENDPOINT = f"{DEFAULT_URL}/next?{DEVICE_ID}"
+    SKIP_TO_PREVIOUS_ENDPOINT = f"{DEFAULT_URL}/previous?{DEVICE_ID}"
 
     # Standard return values
     # For status codes other than 200 and 201
@@ -68,7 +81,7 @@ def __refresh_token(bypass_check=False):
         response = requests.post(_SpotifyConstants.TOKEN_ENDPOINT, headers=headers, data=payload)
     except:
         return _SpotifyConstants.CONNECTION_ERROR
-
+    
     # Check API response
     if response and response.status_code == 200:
         json_data = response.json()
@@ -89,6 +102,13 @@ def __start_playback():
     # Generate aspects of API call
     headers = _Helper.get_headers()
     
+    # set device to be active if it is not via API call
+    set_active_device = __get_device_info()
+    if set_active_device:
+        error_status = __set_active_device()
+        if error_status in [_SpotifyConstants.ERROR, _SpotifyConstants.CONNECTION_ERROR]:
+            return error_status
+    
     # Make API call
     try:
         response = requests.put(_SpotifyConstants.START_PLAYBACK_ENDPOINT, headers=headers, data={})
@@ -96,7 +116,7 @@ def __start_playback():
         return _SpotifyConstants.CONNECTION_ERROR
     
     # Check API response
-    if (response.status_code == 201):
+    if (response.status_code == 202):
         return _SpotifyConstants.SUCCESS
     else:
         return _SpotifyConstants.ERROR
@@ -114,9 +134,9 @@ def __pause_playback():
         response = requests.put(_SpotifyConstants.PAUSE_PLAYBACK_ENDPOINT , headers=headers, data={})
     except:
         return _SpotifyConstants.CONNECTION_ERROR
-    
+ 
     # Check API response
-    if (response.status_code == 201):
+    if (response.status_code == 202):
         return _SpotifyConstants.SUCCESS
     else:
         return _SpotifyConstants.ERROR
@@ -136,7 +156,7 @@ def __skip_playback():
         return _SpotifyConstants.CONNECTION_ERROR
     
     # Check API response
-    if (response.status_code == 201):
+    if (response.status_code == 202):
         return _SpotifyConstants.SUCCESS
     else:
         return _SpotifyConstants.ERROR
@@ -156,23 +176,93 @@ def __previous_playback():
         return _SpotifyConstants.CONNECTION_ERROR
     
     # Check API response
-    if (response.status_code == 201):
+    if (response.status_code == 202):
+        return _SpotifyConstants.SUCCESS
+    else:
+        return _SpotifyConstants.ERROR
+    
+# return status of something is_playing 
+def __is_playing():
+     # Check token
+    __refresh_token()
+
+    # Generate aspects of API call
+    headers = _Helper.get_headers()
+    
+    # Make API call
+    try:
+        response = requests.get(f'{_SpotifyConstants.DEFAULT_URL}', headers=headers)
+    except:
+        return _SpotifyConstants.CONNECTION_ERROR
+    
+    if (response.status_code == 200):   
+        return response.json()['is_playing']
+    else:
+        return _SpotifyConstants.ERROR
+
+# returns "is_active" state of raspberry pi device (private)
+def __get_device_info():
+     # Check token
+    __refresh_token()
+
+    # Generate aspects of API call
+    headers = _Helper.get_headers()
+    
+    # Make API call
+    try:
+        response = requests.get(f'{_SpotifyConstants.DEVICES_ENDPOINT}', headers=headers)
+    except:
+        return _SpotifyConstants.CONNECTION_ERROR
+    
+    transfer_playback = False
+    if (response.status_code == 200): 
+        for device in response.json()['devices']:
+            # raspberry pi found
+            if device['id'] == DEVICE_ID:
+                if not device['is_active']:
+                    transfer_playback = True
+                break
+            
+        return transfer_playback
+    else:
+        return _SpotifyConstants.ERROR
+    
+# sets the raspberry pi to be the active device (private)
+def __set_active_device():
+     # Check token
+    __refresh_token()
+
+    # Generate aspects of API call
+    headers = _Helper.get_headers()
+    
+    # Make API call
+    try:
+        response = requests.put(_SpotifyConstants.DEFAULT_URL, headers=headers, json=_Helper.get_device_json())
+    except:
+        return _SpotifyConstants.CONNECTION_ERROR
+    
+    # Check API response
+    if (response.status_code == 202):
         return _SpotifyConstants.SUCCESS
     else:
         return _SpotifyConstants.ERROR
 
 # Start Playback (public)
 def start_playback():
-    __start_playback()
+    return __start_playback()
 
 # Pause Playback (public)
 def pause_playback():
-    __pause_playback()
+    return __pause_playback()
 
 # Skip Playback (public)
 def skip_playback():
-    __skip_playback()
+    return __skip_playback()
 
 # Previous Playback (public)
 def previous_playback():
-    __previous_playback()
+    return __previous_playback()
+
+# See if something is playing (public)   
+def is_playing():
+    return __is_playing()
