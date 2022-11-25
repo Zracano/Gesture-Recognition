@@ -33,14 +33,31 @@ class _Helper:
         return {
             'Authorization': f"Bearer {_Helper.access_token}"
         }
+    
+    # Return header info for Volume calls   
+    @staticmethod
+    def get_volume_header():
+        return {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': f"Bearer {_Helper.access_token}",
+        }
         
-    # Return DEVICE_ID in a json
+     # Return DEVICE_ID in a json
     @staticmethod
     def get_device_json():
         return  {
             'device_ids': [
                 f'{DEVICE_ID}',
             ],
+        }
+        
+    # Return DEVICE_ID in a json
+    @staticmethod
+    def set_volume_json(new_vol):
+        return  {
+            'volume_percent' : f"{new_vol}",
+            'device_id' : f'{DEVICE_ID}',
         }
         
 class _SpotifyConstants:
@@ -52,6 +69,7 @@ class _SpotifyConstants:
     PAUSE_PLAYBACK_ENDPOINT = f"{DEFAULT_URL}/pause?{DEVICE_ID}"
     SKIP_TO_NEXT_ENDPOINT = f"{DEFAULT_URL}/next?{DEVICE_ID}"
     SKIP_TO_PREVIOUS_ENDPOINT = f"{DEFAULT_URL}/previous?{DEVICE_ID}"
+    VOLUME_ENDPOINT = f"{DEFAULT_URL}/volume?{DEVICE_ID}"
 
     # Standard return values
     # For status codes other than 200 and 201
@@ -199,8 +217,30 @@ def __is_playing():
         return response.json()['is_playing']
     else:
         return _SpotifyConstants.ERROR
+    
+# return status of something is_playing 
+def __change_volume(change_volume_by):
+     # Check token
+    __refresh_token()
 
-# returns "is_active" state of raspberry pi device (private)
+    # Generate aspects of API call
+    headers = _Helper.get_headers()
+    
+    _ , current_volume = __get_device_info()
+    current_volume += change_volume_by
+    
+    # Make API call
+    try:
+        response = requests.put(f'{_SpotifyConstants.VOLUME_ENDPOINT}', headers=headers, params=_Helper.set_volume_json(current_volume))
+    except:
+        return _SpotifyConstants.CONNECTION_ERROR
+    
+    if (response.status_code == 204):   
+        return _SpotifyConstants.SUCCESS
+    else:
+        return _SpotifyConstants.ERROR
+
+# returns "is_active" state and "volume_percent" of raspberry pi device (private)
 def __get_device_info():
      # Check token
     __refresh_token()
@@ -223,7 +263,7 @@ def __get_device_info():
                     transfer_playback = True
                 break
             
-        return transfer_playback
+        return transfer_playback, device['volume_percent']
     else:
         return _SpotifyConstants.ERROR
     
@@ -266,3 +306,7 @@ def previous_playback():
 # See if something is playing (public)   
 def is_playing():
     return __is_playing()
+
+# Change playback volume by a certain increment (public)   
+def change_volume(change_volume_by):
+    return __change_volume(change_volume_by)
