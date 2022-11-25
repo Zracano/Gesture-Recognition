@@ -4,6 +4,8 @@ import numpy as np
 import text_to_speech
 import time
 from threading import Thread
+import spotify
+import nest
 
 '''
 This program is able to detect a circular pattern made with the index finger along with the
@@ -44,18 +46,23 @@ class Helper:
     COUNTER_CLOCKWISE = "COUNTER-CLOCKWISE"
     NO_ROTATION = "NO-ROTATION"
     EMPTY_VALUE = -1
-    TIME_BETWEEN_COMMANDS = 4
+    TIME_BETWEEN_COMMANDS = 5
     EMPTY = 0
     RIGHT_HAND = "Right"
     HAND_DATA = "lmList"
+    INCREMENT_SPOTIFY_VOLUME = 5
+    INCREMENT_THERMOSTAT = 1
     
     # variables
     last_x1, last_y1 = EMPTY_VALUE, EMPTY_VALUE
-    num_revolutions = EMPTY
     circle_points = []
     finger_color = WHITE
     rotation_direction = EMPTY
     last_command_time = EMPTY
+    
+    # voice replies
+    THERMOSTAT_OFF_MESSAGE = "Thermostat is off, turn it on to change temperature"
+    THERMOSTAT_ERROR_MESSAGE = "Issue connecting to nest device, try again later"
     
     def __init__(self):
         # setting up hand detector
@@ -65,6 +72,10 @@ class Helper:
     
     def clear_canvas(self):
         self.canvas = np.zeros((500, 500), np.uint8)
+    
+    @staticmethod
+    def create_message(mode, temperature):
+        return f"Thermostat mode is currently set to {mode} and the temperature is {temperature} degrees"
     
 def run(img, program_data):   
     # run on a different thread
@@ -135,13 +146,10 @@ def pattern_recognition(img, program_data):
                         # a delay between current and next command 
                         if time.time() - Helper.last_command_time > Helper.TIME_BETWEEN_COMMANDS:
                             Helper.IS_DRAW_OUT_OF_CIRCLE = False
-                            Helper.num_revolutions+=1
                             # reset canvas since a circle was detected
                             reset_pattern(program_data)
-                            text_to_speech.run(f" {Helper.num_revolutions} revolutions detected:  {getRotationDirection()}")
+                            api_call(getRotationDirection())
                             Helper.last_command_time = time.time()
-                            # reset rotation direction
-                            Helper.rotation_direction = 0
                     else:
                         # circle not found
                         return
@@ -157,10 +165,6 @@ def pattern_recognition(img, program_data):
         else:
             # clear canvas if index finger is not up
             reset_pattern(program_data)
-    else:
-        # reset number of revolutions if there is no hand present in camera view
-        if Helper.num_revolutions > 0:
-            Helper.num_revolutions = 0
     
     return
 
@@ -200,3 +204,30 @@ def reset_pattern(program_data):
     Helper.last_x1, Helper.last_y1 = Helper.EMPTY_VALUE, Helper.EMPTY_VALUE
     Helper.circle_points = []
     Helper.IS_DRAW_OUT_OF_CIRCLE = False
+    
+# determine which api to call in order to execute pattern gesture
+def api_call(rotation_direction):
+    is_increasing = True
+    if rotation_direction == Helper.COUNTER_CLOCKWISE:
+        is_increasing = False
+        
+    # if spotify is playing, increment/decrement the volume depending on pattern rotation
+    if spotify.is_playing():
+        spotify.change_volume(Helper.INCREMENT_SPOTIFY_VOLUME * (1 if is_increasing else -1))
+    else:
+        # change thermostat temperature if device is ON
+        current_temp_mode = nest.get_current_temp_mode()
+         # change thermostat temperature if device is ON and is set to either "HEAT" or "COOL"
+        if current_temp_mode in [nest._Helper.COOL, nest._Helper.HEAT]:
+            # get the command to change thermostat based on current thermostat mode
+            current_mode = nest._Helper.COOL_COMMAND if current_temp_mode == nest._Helper.COOL else nest._Helper.HEAT_COMMAND
+            # get current temperature
+            current_temp = nest.get_current_temp()
+            # change temperature (+1 or -1) based on pattern rotation
+            response = nest.update_thermostat(current_temp + Helper.INCREMENT_THERMOSTAT, current_mode)
+            if response in [nest._Helper.ERROR, nest._Helper.CONNECTION_ERROR]:
+                text_to_speech.run(Helper.THERMOSTAT_ERROR_MESSAGE)
+            else:
+                text_to_speech.run(Helper.create_message(current_temp_mode, current_temp))
+        else:
+            text_to_speech.run(Helper.THERMOSTAT_OFF_MESSAGE)

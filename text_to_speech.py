@@ -12,10 +12,10 @@ from sys import platform
 
 # run in a different thread so it runs concurrently
 def run(text):
-    thread = Thread(target = text_to_speech, args = (text, ))
+    thread = Thread(target = __text_to_speech, args = (text, ))
     thread.start()
 
-def text_to_speech(text):
+def __text_to_speech(text):
     # ensure filename is unique
     filename = f"output_{time.time()}.mp3"
     
@@ -34,10 +34,10 @@ def text_to_speech(text):
     elif platform == "win32":
         os.system(f"start {filename}")
     # delete file after it was played
-    delete_file(filename)
+    __delete_file(filename)
     
 # delete audio file after it has been played
-def delete_file(filename):
+def __delete_file(filename):
     if os.path.isfile(filename):
         # get duration of audio file
         audio_duration = MP3(filename).info.length
