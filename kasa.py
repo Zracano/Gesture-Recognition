@@ -1,6 +1,6 @@
 import uuid
 import requests
-from kasa_secrets_private import LOGIN_EMAIL, LOGIN_PASSWORD, KASA_SMART_PLUG_NAME
+from kasa_secrets import LOGIN_EMAIL, LOGIN_PASSWORD, KASA_SMART_PLUG_NAME
 
 '''
 This program controls a Kasa SmartPlug using KASA API

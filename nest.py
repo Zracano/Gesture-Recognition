@@ -114,7 +114,7 @@ def __get_device_info():
     except (requests.exceptions.Timeout, requests.exceptions.TooManyRedirects, requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
         return _Helper.CONNECTION_ERROR
 
-    if 'error' in response.json():
+    if response.status_code !=200:
         print("Connecting to Nest Device Failed...")
         return _Helper.ERROR
 
@@ -153,7 +153,7 @@ def __update_thermostat(value, command, internal_method = True):
     except (requests.exceptions.Timeout, requests.exceptions.TooManyRedirects, requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
         return _Helper.CONNECTION_ERROR
     
-    if 'error' not in response.json():
+    if response.status_code != 200:
         print(f"Error changing thermostat to {command} and {value}")
         return _Helper.ERROR
 
@@ -168,14 +168,14 @@ def get_current_temp():
         temp = nest_device.device_cool_temp if nest_device.device_mode == _Helper.COOL \
             else nest_device.device_heat_temp if nest_device.device_mode == _Helper.HEAT \
             else 0
-        return temp, nest_device.device_mode if temp is not None else "OFF"
-    else:
-        return nest_device
+        return temp
+
+    return _Helper.ERROR
     
 # get current temp of thermostat    
 def get_current_temp_mode():
     nest_device = __get_nest_data()
-    if nest_device not in {_Helper.ERROR, _Helper.CONNECTION_ERROR}:
+    try:
         return nest_device.device_mode
-    else:
-        return nest_device
+    except:
+        return _Helper.ERROR
