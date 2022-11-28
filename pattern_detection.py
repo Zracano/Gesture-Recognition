@@ -1,6 +1,7 @@
 import cv2
 from cvzone.HandTrackingModule import HandDetector
 import numpy as np
+import math
 import text_to_speech
 import time
 from threading import Thread
@@ -46,7 +47,7 @@ class Helper:
     COUNTER_CLOCKWISE = "COUNTER-CLOCKWISE"
     NO_ROTATION = "NO-ROTATION"
     EMPTY_VALUE = -1
-    TIME_BETWEEN_COMMANDS = 5
+    TIME_BETWEEN_COMMANDS = 2
     EMPTY = 0
     RIGHT_HAND = "Right"
     HAND_DATA = "lmList"
@@ -146,9 +147,9 @@ def pattern_recognition(img, program_data):
                         # a delay between current and next command 
                         if time.time() - Helper.last_command_time > Helper.TIME_BETWEEN_COMMANDS:
                             Helper.IS_DRAW_OUT_OF_CIRCLE = False
+                            api_call(getRotationDirection())
                             # reset canvas since a circle was detected
                             reset_pattern(program_data)
-                            api_call(getRotationDirection())
                             Helper.last_command_time = time.time()
                     else:
                         # circle not found
@@ -204,6 +205,7 @@ def reset_pattern(program_data):
     Helper.last_x1, Helper.last_y1 = Helper.EMPTY_VALUE, Helper.EMPTY_VALUE
     Helper.circle_points = []
     Helper.IS_DRAW_OUT_OF_CIRCLE = False
+    Helper.rotation_direction = Helper.EMPTY
     
 # determine which api to call in order to execute pattern gesture
 def api_call(rotation_direction):
@@ -211,11 +213,16 @@ def api_call(rotation_direction):
     if rotation_direction == Helper.COUNTER_CLOCKWISE:
         is_increasing = False
         
+    response = spotify.is_playing()
+    
+    if response in [spotify._SpotifyConstants.ERROR, spotify._SpotifyConstants.CONNECTION_ERROR]:
+        response = False
+        
     # if spotify is playing, increment/decrement the volume depending on pattern rotation
-    if spotify.is_playing():
+    if response:
         new_volume = Helper.INCREMENT_SPOTIFY_VOLUME * (1 if is_increasing else -1)
         spotify.change_volume(new_volume)
-        print(f"Spotify: new volume -> {new_volume}")
+        print(f"Spotify: Volume Increment -> {new_volume}")
     else:
         # change thermostat temperature if device is ON
         current_temp_mode = nest.get_current_temp_mode()
@@ -225,8 +232,25 @@ def api_call(rotation_direction):
             current_mode = nest._Helper.COOL_COMMAND if current_temp_mode == nest._Helper.COOL else nest._Helper.HEAT_COMMAND
             # get current temperature
             current_temp = nest.get_current_temp()
+            
+            # error encountered, return 
+            if current_temp == nest._Helper.ERROR:
+                print("Error Retrieving current temp")
+                return
+            
+            # new temperature
+            print(f"current temp {current_temp}")
+            if is_increasing:
+                print(f"before  {current_temp}")
+                new_temp = math.ceil(current_temp) + Helper.INCREMENT_THERMOSTAT
+                print(f"after {new_temp}")
+            else:
+                print(f"before  {current_temp}")
+                new_temp = math.floor(current_temp) + Helper.INCREMENT_THERMOSTAT * -1
+                print(f"after {new_temp}")
+                
             # change temperature (+1 or -1) based on pattern rotation
-            response = nest.update_thermostat(current_temp + Helper.INCREMENT_THERMOSTAT, current_mode)
+            response = nest.update_thermostat(new_temp, current_mode)
             # if there was an error, notify user
             if response in [nest._Helper.ERROR, nest._Helper.CONNECTION_ERROR]:
                 text_to_speech.run(Helper.THERMOSTAT_ERROR_MESSAGE)
