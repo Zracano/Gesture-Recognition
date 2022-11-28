@@ -68,7 +68,7 @@ is_playing()
 change_volume(increment):
 ```
 
-#### Kasa
+#### Kasa API
 ###### Purpose: Control a fan/light to turn ON or OFF.
 
 ```python
