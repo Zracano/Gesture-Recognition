@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from spotify_secrets_private import DEVICE_ID, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN
+from spotify_secrets import DEVICE_ID, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN
 import requests
 
 # Methods (available to use):
