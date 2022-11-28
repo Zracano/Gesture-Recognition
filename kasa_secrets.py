@@ -1,3 +1,6 @@
-# IP Address of Kasa SmartPlug device on the local network
+# Name of KASA SwitchPlug
+# Credentials for KASA Account
 
-KASA_DEVICE_IP_ADDRESS = ""
+LOGIN_EMAIL = ""
+LOGIN_PASSWORD = ""
+KASA_SMART_PLUG_NAME = ""
