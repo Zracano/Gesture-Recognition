@@ -163,4 +163,4 @@ cython_debug/
 
 nest_secrets_private.py
 spotify_secrets_private.py
-
+kasa_secrets_private.py
