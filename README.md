@@ -72,7 +72,9 @@ change_volume(increment):
 ###### Purpose: Control a fan/light to turn ON or OFF.
 
 ```python
-# TO DO
+# turn Kasa SmartPlug ON if OFF and vice versa
+# fan/light is connected to SmartPlug so it will turn them OFF/ON
+flip_switch()
 ```
 
 ## Git:
