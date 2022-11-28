@@ -5,6 +5,7 @@
     3. [Kasa](#kasa-api)
 2. [Using Git](#git)
 3. [Using Conda](#creating-an-environment)
+4. [How to Use](#how-to-use)
 
 ## APIs
 
@@ -154,3 +155,12 @@ If we pull a new environment.yml file we simply update or environment by doing
 conda env update --file environment.yml  --prune
 ```
 
+## How To Use
+1. Follow the steps to [use git](#git) and clone the repository.
+2. Follow the steps to [use conda](#creating-an-environment) to create a conda enviroment
+3. Open nest_secrets.py, and spotify_secrets.py to add your API tokens
+4. Make sure you have your camera turned on and applications have permision to use it
+5. Run the gesture-detection-main.py script on your device
+
+Finally use any of the following gestures to control your Home.
+![Alt text](Gestures.png)
