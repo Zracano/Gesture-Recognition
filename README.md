@@ -1,4 +1,10 @@
 # Gesture Recognition
+1. [APIs](#apis)
+    1. [Nest](#nest-api)
+    2. [Spotify](#spotify-api)
+    3. [Kasa](#kasa-api)
+2. [Using Git](#git)
+3. [Using Conda](#creating-an-environment)
 
 ## APIs
 
@@ -147,5 +153,4 @@ If we pull a new environment.yml file we simply update or environment by doing
 ```shell
 conda env update --file environment.yml  --prune
 ```
-
 
