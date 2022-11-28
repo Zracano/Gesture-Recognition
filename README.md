@@ -80,9 +80,7 @@ flip_switch(new_state)
 ## Git:
 Make sure you have Git installed on your computer. Follow [thse steps](https://github.com/git-guides/install-git) if you dont have Git already.
 ```shell
-# using git bash (command line)
 # make sure you are in a directory that you want to put the project in
-# you can use cd and ls to navigate your computer's directories
 # make a copy of the repository on your computer
 git clone https://github.com/Zracano/Gesture-Recognition
 ```
@@ -93,27 +91,47 @@ git clone https://github.com/Zracano/Gesture-Recognition
 
 The file **environment.yml** describes the python version and various dependencies with specific version numbers. 
 To activate the environment perform the following in your command line:
-```shell
+```python
+# creates the environment from the specifications file which only needs to be done once. 
 conda env create -f environment.yml
-
+# activates the environment which may need to be done each time you restart the terminal.
 conda activate GestureRecognition
-
+# test the environment installation where it will list all dependencies for that environment
 conda env list
 ```
-
-The first line creates the environment from the specifications file which only needs to be done once. 
-
-The second line activates the environment which may need to be done each time you restart the terminal.
-
-The third line is to test the environment installation where it will list all dependencies for that environment
 
 
 ## How To Use
 1. Follow the steps to [use git](#git) and clone the repository.
 2. Follow the steps to [use conda](#creating-an-environment) to create a conda enviroment
-3. Open nest_secrets.py, and spotify_secrets.py to add your API tokens
+3. Open nest_secrets.py, spotify_secrets.py, and kasa_secrets.py to add your API tokens
 4. Make sure you have your camera turned on and applications have permision to use it
 5. Run the gesture-detection-main.py script on your device
 
-Finally use any of the following gestures to control your Home.
+Finally use any of the following gestures to control your Home:
+
+Spotify Gestures:
+Thumb up   -> Start/Resume Song
+Thumb down -> Pause Song
+Right      -> Next Song
+left       -> Previous Song
+
+Nest Gestures:
+ok 	 -> Change thermostat mode to COOL
+two  -> Change thermostat mode to HEAT
+fist -> Returns the current mode of thermostat
+
+Kasa:
+call + thumbs up   -> Turn on device
+call + thumbs down -> Turn off device
+
+Pattern Gesture:
+Spotify Playing:
+Clockwise Circle         -> Increase Volume
+Counter-Clockwise Circle -> Decrease Volume
+
+Spotify Not-Playing:
+Clockwise Circle         -> Increase Thermostat Temp
+Counter-Clockwise Circle -> Decrease Thermostat Temp
+
 ![Alt text](Gestures.png)
