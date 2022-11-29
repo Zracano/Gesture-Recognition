@@ -37,10 +37,13 @@ conda activate GestureRecognition
 # list all dependencies for that environment
 conda env list
 ```
-#### 3. Open nest_secrets.py, spotify_secrets.py, and kasa_secrets.py to add your API tokens and login  
-#### 4. Make sure you have your camera turned on and applications have permision to use it  
-#### 5. Run `python gesture_detection_main.py` in your terminal 
-#### 6. Finally use any of the following gestures to control your Home.
+#### 3. Open nest_secrets.py, spotify_secrets.py, and kasa_secrets.py to add your API tokens and login.  
+#### 4. Make sure you have your camera turned on and applications have permission to use it.  
+#### 5. Run in terminal
+```shell
+python gesture_detection_main.py 
+```
+#### 6. Finally use any of the following gestures to control your Home.  
 
 </p>
 </details>
