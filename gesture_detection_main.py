@@ -176,6 +176,5 @@ def handle_gestures(gesture_list, last_command):
         return "call"
 
 
-
 if __name__ == '__main__':
     main()

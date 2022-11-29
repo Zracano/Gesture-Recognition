@@ -245,7 +245,7 @@ def api_call(rotation_direction):
             if is_increasing:
                 new_temp = math.ceil(current_temp) + Helper.INCREMENT_THERMOSTAT
             else:
-                new_temp = math.floor(current_temp) + Helper.INCREMENT_THERMOSTAT * -1
+                new_temp = math.ceil(current_temp) + Helper.INCREMENT_THERMOSTAT * -1
                 
             # change temperature (+1 or -1) based on pattern rotation
             response = nest.update_thermostat(new_temp, current_mode)
