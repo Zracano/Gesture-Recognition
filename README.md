@@ -58,6 +58,7 @@ python gesture_detection_main.py
 - ok 	     &#8594; Change thermostat mode to COOL (Nest)  
 - two        &#8594; Change thermostat mode to HEAT  
 - fist       &#8594; Returns the current mode of thermostat  
+- call + fist &#8594; Change thermostat mode to OFF     
 - call + thumbs up   &#8594; Turn on device (Kasa)  
 - call + thumbs down &#8594; Turn off device  
 - Clockwise Circle Pattern:
