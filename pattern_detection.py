@@ -51,7 +51,7 @@ class Helper:
     EMPTY = 0
     RIGHT_HAND = "Right"
     HAND_DATA = "lmList"
-    INCREMENT_SPOTIFY_VOLUME = 5
+    INCREMENT_SPOTIFY_VOLUME = 10
     INCREMENT_THERMOSTAT = 1
     
     # variables
