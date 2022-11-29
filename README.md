@@ -57,16 +57,18 @@ python gesture_detection_main.py
 - left       &#8594; Previous Song  
 - ok 	     &#8594; Change thermostat mode to COOL (Nest)  
 - two        &#8594; Change thermostat mode to HEAT  
-- fist       &#8594; Returns the current mode of thermostat  
-- call + fist &#8594; Change thermostat mode to OFF     
+- call + fist &#8594; Change thermostat mode to OFF  
+- fist       &#8594; Returns the current mode of thermostat    
 - call + thumbs up   &#8594; Turn on device (Kasa)  
 - call + thumbs down &#8594; Turn off device  
-- Clockwise Circle Pattern:
-    - Spotify Playing &#8594; Increase Volume  
-    - Spotify Not Playing  &#8594; Increase Temperature  
-- Counter-Clockwise Pattern:  
-    - Spotify Playing &#8594; Decrease Volume  
-    - Spotify Not Playing &#8594; Decrease Temperature  
+- Pattern Gesture: (Using Index Finger, like so)
+    <img src="index_finger.png" align="right" width="100" height="100" style="border-radius:50%"/> 
+    - Clockwise Circle Pattern:
+        - Spotify Playing &#8594; Increase Volume  
+        - Spotify Not Playing  &#8594; Increase Temperature  
+    - Counter-Clockwise Pattern:  
+        - Spotify Playing &#8594; Decrease Volume  
+        - Spotify Not Playing &#8594; Decrease Temperature  
 
 ## APIs
 
