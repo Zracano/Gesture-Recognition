@@ -15,7 +15,7 @@ Gestures for Home Control is gesture-based home control system and was made to b
 
 ### Getting Started:
 <details><summary>Installation</summary>
-<p>  
+
 #### 1. Git:  
 Make sure you have Git installed on your computer. Follow [these steps](https://github.com/git-guides/install-git) if you don't have Git already.  
 ```shell
@@ -29,6 +29,7 @@ git clone https://github.com/Zracano/Gesture-Recognition
 
 The file **environment.yml** describes the python version and various dependencies with specific version numbers. 
 To activate the environment perform the following in your command line:  
+
 ```shell
 # creates the environment from the specifications file (only needs to be done once)
 conda env create -f environment.yml
@@ -45,7 +46,6 @@ python gesture_detection_main.py
 ```
 #### 6. Finally use any of the following gestures to control your Home.  
 
-</p>
 </details>
 
 ### Gestures:  
