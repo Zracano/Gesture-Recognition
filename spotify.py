@@ -4,8 +4,8 @@ import requests
 
 # Methods (available to use):
 # RETURN VALUES
-# returns {ERROR or CONNECTION_ERROR} depending on error
-# returns SUCCESS otherwise
+# ERROR: returns "ERROR" or "CONNECTION_ERROR
+# NO ERROR: returns "SUCCESS"
 
 # starts/resumes the playback
 # start_playback()
@@ -222,7 +222,7 @@ def __is_playing():
     else:
         return _SpotifyConstants.ERROR
     
-# return status of something is_playing 
+# return state of is_playing something
 def __change_volume(change_volume_by):
      # Check token
     __refresh_token()

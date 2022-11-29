@@ -2,15 +2,14 @@ import uuid
 import requests
 from kasa_secrets import LOGIN_EMAIL, LOGIN_PASSWORD, KASA_SMART_PLUG_NAME
 
-'''
-This program controls a Kasa SmartPlug using KASA API
-in order to turn it ON and OFF. 
-'''
+#######################################################################################
+# This program controls a Kasa SmartPlug using KASA API in order to turn it ON and OFF. 
+#######################################################################################
 
 class Kasa:
     ERROR = "ERROR"
 
-# get token to use 
+# get token to use in API call
 def __get_kasa_token():
     payload = {
             "method": "login",
@@ -24,7 +23,7 @@ def __get_kasa_token():
     
     response = requests.post(url="https://wap.tplinkcloud.com/", json=payload)
     
-    # make sure there was not an error
+    # make sure there wasn't an error
     if response.status_code == 200:
         try: 
             return response.json()["result"]["token"]

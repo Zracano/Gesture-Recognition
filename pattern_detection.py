@@ -212,9 +212,11 @@ def api_call(rotation_direction):
     is_increasing = True
     if rotation_direction == Helper.COUNTER_CLOCKWISE:
         is_increasing = False
-        
+
+    # check if raspberry pi device is playing a song
     response = spotify.is_playing()
     
+    # check if there was an error retrieving is_playing state of raspberry pi
     if response in [spotify._SpotifyConstants.ERROR, spotify._SpotifyConstants.CONNECTION_ERROR]:
         response = False
         
@@ -233,21 +235,17 @@ def api_call(rotation_direction):
             # get current temperature
             current_temp = nest.get_current_temp()
             
-            # error encountered, return 
+            # check if there was an error getting current temperature
+            # usually occurs when making too many calls to Nest API
             if current_temp == nest._Helper.ERROR:
-                print("Error Retrieving current temp")
+                print("Error retrieving current temp, might be due to too many API calls")
                 return
             
             # new temperature
-            print(f"current temp {current_temp}")
             if is_increasing:
-                print(f"before  {current_temp}")
                 new_temp = math.ceil(current_temp) + Helper.INCREMENT_THERMOSTAT
-                print(f"after {new_temp}")
             else:
-                print(f"before  {current_temp}")
                 new_temp = math.floor(current_temp) + Helper.INCREMENT_THERMOSTAT * -1
-                print(f"after {new_temp}")
                 
             # change temperature (+1 or -1) based on pattern rotation
             response = nest.update_thermostat(new_temp, current_mode)
@@ -256,7 +254,8 @@ def api_call(rotation_direction):
                 text_to_speech.run(Helper.THERMOSTAT_ERROR_MESSAGE)
             else:
                 # temperature updated, notify
-                text_to_speech.run(Helper.create_message(current_temp_mode, current_temp))
+                text_to_speech.run(Helper.create_message(current_temp_mode, new_temp))
+                print(f"New Temp -> {new_temp}")
         else:
             # thermostat device is off, notify user
             text_to_speech.run(Helper.THERMOSTAT_OFF_MESSAGE)

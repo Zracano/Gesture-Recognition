@@ -43,6 +43,7 @@ def __delete_file(filename):
         audio_duration = MP3(filename).info.length
         # delay is added to ensure audio file has been played
         sleep(audio_duration)
+        # remove file since it is no longer needed
         os.remove(filename)
     else: 
         print(f"Error: {filename} audio-file not found")

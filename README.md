@@ -60,7 +60,7 @@ python gesture_detection_main.py
 - fist       &#8594; Returns the current mode of thermostat  
 - call + thumbs up   &#8594; Turn on device (Kasa)  
 - call + thumbs down &#8594; Turn off device  
-- Clockwise Circle Pattern:  
+- Clockwise Circle Pattern:
     - Spotify Playing &#8594; Increase Volume  
     - Spotify Not Playing  &#8594; Increase Temperature  
 - Counter-Clockwise Pattern:  
